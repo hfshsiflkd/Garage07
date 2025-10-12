@@ -32,13 +32,13 @@ export default function Garage07QRMenu() {
           name: "Balsamic rocket",
           price: "₮22,000",
           desc: "balsamic vinegar, rocket, parmesan",
-          img: "/hool/steak.jpg",
+          img: "/hool/rocket_salad_final_1.jpg",
         },
         {
           name: "Asian smashed cucumber",
           price: "₮16,500",
           desc: "cucumber, sesame oil, soy sauce",
-          img: "/hool/steak.jpg",
+          img: "/hool/asian_cucumber.jpg",
         },
       ],
     },
@@ -49,19 +49,19 @@ export default function Garage07QRMenu() {
           name: "Beef broccoli - 2per",
           price: "₮28,000",
           desc: "Beef, broccoli, sesame sauce ",
-          img: "/hool/steak.jpg",
+          img: "/hool/beef broccoli.jpeg",
         },
         {
-          name: "Beef Curry - 2per",
-          price: "₮28,000",
+          name: "Beef Curry",
+          price: "₮21,500",
           desc: "Beef,curry sauce,rice",
-          img: "/hool/steak.jpg",
+          img: "/hool/Coconut-Beef-Curry-3.webp",
         },
         {
-          name: "Chicken curry - 2per",
-          price: "₮22,000",
-          desc: "Beef,curry sauce,rice",
-          img: "/hool/steak.jpg",
+          name: "Chicken curry",
+          price: "₮15,500",
+          desc: "Chicken,curry sauce,rice",
+          img: "/hool/Chicken_curry.jpg",
         },
         {
           name: "Өвчүүний цуйван ",
@@ -73,7 +73,7 @@ export default function Garage07QRMenu() {
           name: "Stir fried udon ",
           price: "₮20,000",
           desc: "beef, vegetables, udon noodles",
-          img: "/hool/steak.jpg",
+          img: "/hool/yaki-udon-udon-noodle-stir-fry-9.jpg",
         },
       ],
     },
@@ -90,19 +90,19 @@ export default function Garage07QRMenu() {
           name: "Egg drop soup",
           price: "₮15,000",
           desc: "Egg, chicken broth, scallions",
-          img: "/hool/steak.jpg",
+          img: "/hool/egg-drop-soup-11.webp",
         },
         {
           name: "Pumpkin soup",
           price: "₮17,000",
           desc: "Pumpkin, cream, vegetables",
-          img: "/hool/steak.jpg",
+          img: "/hool/Roasted-Butternut-Squash-Soup-TIMG.jpg",
         },
         {
           name: "Chiken soup",
           price: "₮29,500",
           desc: "Whole chiken, vegetables, cream",
-          img: "/hool/steak.jpg",
+          img: "/hool/Chicken_soup.jpg",
         },
       ],
     },
@@ -113,7 +113,7 @@ export default function Garage07QRMenu() {
           name: "Carbonara pasta",
           price: "₮26,500",
           desc: "Bacon, egg yolk, parmesan",
-          img: "/hool/steak.jpg",
+          img: "/hool/CB.jpg",
         },
         {
           name: "Salmon pestp spaghetti",
@@ -125,7 +125,7 @@ export default function Garage07QRMenu() {
           name: "meatball spaghetti",
           price: "₮28,500",
           desc: "Beef meatball, tomato sauce, parmesan",
-          img: "/hool/steak.jpg",
+          img: "/hool/mt.jpeg",
         },
       ],
     },
@@ -136,19 +136,19 @@ export default function Garage07QRMenu() {
           name: "Meat lovers 13inch",
           price: "₮27,500",
           desc: "Chicken ,bacon, vegetables, mozzarella, tomato sauce",
-          img: "/hool/steak.jpg",
+          img: "/hool/oizza mt l.avif",
         },
         {
           name: "Jalapeno pepperoni 13inch",
           price: "₮26,500",
           desc: "Pepperoni, jalapeno, mozzarella , tomato sauce",
-          img: "/hool/steak.jpg",
+          img: "/hool/Pizza_JP.png",
         },
         {
           name: "pepperoni 13inch",
           price: "₮25,500",
           desc: "Pepperoni, mozzarella, tomato sauce",
-          img: "/hool/steak.jpg",
+          img: "/hool/Pizza_13inch.jpg",
         },
       ],
     },
@@ -159,19 +159,19 @@ export default function Garage07QRMenu() {
           name: "french fries",
           price: "₮12,500",
           desc: "with ketchup",
-          img: "/hool/steak.jpg",
+          img: "/hool/Fries.jpg",
         },
         {
           name: "Homemade potato wedges",
           price: "₮11,500",
           desc: "ketchup, ranch sauce",
-          img: "/hool/steak.jpg",
+          img: "/hool/Potato-Wedges1.jpg",
         },
         {
           name: "steamed rice",
           price: "₮2000",
           desc: "seasame seeds",
-          img: "/hool/steak.jpg",
+          img: "/hool/Rice.jpeg",
         },
       ],
     },
@@ -291,12 +291,14 @@ export default function Garage07QRMenu() {
             className="bg-[#0b0b0d] rounded-2xl p-5 max-w-sm w-full relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-white"
-              onClick={() => setSelectedItem(null)}
-            >
-              ✕
-            </button>
+            <div className="w-full flex justify-end mb-2">
+              <button
+                className=" text-gray-400 hover:text-white text-xl font-bold"
+                onClick={() => setSelectedItem(null)}
+              >
+                ✕
+              </button>
+            </div>
             <Image
               src={selectedItem.img}
               alt={selectedItem.name}
