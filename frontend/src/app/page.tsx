@@ -16,7 +16,7 @@ type MenuCategory = {
 
 export default function Garage07QRMenu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>("Salats");
+  const [activeCategory, setActiveCategory] = useState<string>("Salad");
 
   const menu: MenuCategory[] = [
     {
