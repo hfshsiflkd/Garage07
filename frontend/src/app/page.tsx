@@ -20,7 +20,7 @@ export default function Garage07QRMenu() {
 
   const menu: MenuCategory[] = [
     {
-      category: "Salats",
+      category: "Salad",
       items: [
         {
           name: "Chiken ceasar",
