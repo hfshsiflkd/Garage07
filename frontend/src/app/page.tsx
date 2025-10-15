@@ -1,6 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRef } from "react";
+import { motion } from "framer-motion"; // ← нэмэхээ мартуузай
+import { ChevronLeft, ChevronRight } from "lucide-react"; // ← сумны icon
 
 type MenuItem = {
   name: string;
@@ -18,21 +21,25 @@ export default function Garage07QRMenu() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("Salad");
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollBy = (offset: number) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
+    }
+  };
+
+  
+
   const menu: MenuCategory[] = [
     {
       category: "Salad",
       items: [
         {
-          name: "Chiken ceasar",
+          name: "Chicken ceasar",
           price: "₮23,500",
           desc: "Ice berg, chicken, parmesan",
           img: "/hool/ceasar.jpg",
-        },
-        {
-          name: "Balsamic rocket",
-          price: "₮22,000",
-          desc: "balsamic vinegar, rocket, parmesan",
-          img: "/hool/rocket_salad_final_1.jpg",
         },
         {
           name: "Asian smashed cucumber",
@@ -47,7 +54,7 @@ export default function Garage07QRMenu() {
       items: [
         {
           name: "Beef broccoli - 2per",
-          price: "₮28,000",
+          price: "₮32,000",
           desc: "Beef, broccoli, sesame sauce ",
           img: "/hool/beef broccoli.jpeg",
         },
@@ -71,9 +78,15 @@ export default function Garage07QRMenu() {
         },
         {
           name: "Stir fried udon ",
-          price: "₮20,000",
-          desc: "beef, vegetables, udon noodles",
+          price: "₮19,900",
+          desc: "chicken, vegetables, udon noodles",
           img: "/hool/yaki-udon-udon-noodle-stir-fry-9.jpg",
+        },
+        {
+          name: "Teriyaki chicken bowl",
+          price: "₮21,900",
+          desc: "chicken, vegetables, udon noodles",
+          img: "/hool/Teriyaki-chicken-bowl-feature.webp",
         },
       ],
     },
@@ -99,32 +112,32 @@ export default function Garage07QRMenu() {
           img: "/hool/Roasted-Butternut-Squash-Soup-TIMG.jpg",
         },
         {
-          name: "Chiken soup",
+          name: "Chicken soup",
           price: "₮29,500",
-          desc: "Whole chiken, vegetables, cream",
+          desc: "Whole chicken, vegetables, cream",
           img: "/hool/Chicken_soup.jpg",
         },
       ],
     },
     {
-      category: "Pasta",
+      category: "Pasta & Steak",
       items: [
         {
-          name: "Carbonara pasta",
+          name: "Carbonara spaghetti",
           price: "₮26,500",
           desc: "Bacon, egg yolk, parmesan",
           img: "/hool/CB.jpg",
         },
         {
-          name: "Salmon pestp spaghetti",
-          price: "₮32,000",
-          desc: "Salmon, pesto sauce, parmesan",
-          img: "/hool/steak.jpg",
-        },
-        {
           name: "meatball spaghetti",
           price: "₮28,500",
           desc: "Beef meatball, tomato sauce, parmesan",
+          img: "/hool/mt.jpeg",
+        },
+        {
+          name: "Salmon steak",
+          price: "₮32,500",
+          desc: "Salmon, asparagus, lemon, broccli,  pumpkin, purée",
           img: "/hool/mt.jpeg",
         },
       ],
@@ -134,19 +147,19 @@ export default function Garage07QRMenu() {
       items: [
         {
           name: "Meat lovers 13inch",
-          price: "₮27,500",
+          price: "₮29,000",
           desc: "Chicken ,bacon, vegetables, mozzarella, tomato sauce",
           img: "/hool/oizza mt l.avif",
         },
         {
           name: "Jalapeno pepperoni 13inch",
-          price: "₮26,500",
+          price: "₮28,500",
           desc: "Pepperoni, jalapeno, mozzarella , tomato sauce",
           img: "/hool/Pizza_JP.png",
         },
         {
           name: "pepperoni 13inch",
-          price: "₮25,500",
+          price: "₮27,000",
           desc: "Pepperoni, mozzarella, tomato sauce",
           img: "/hool/Pizza_13inch.jpg",
         },
@@ -157,21 +170,91 @@ export default function Garage07QRMenu() {
       items: [
         {
           name: "french fries",
-          price: "₮12,500",
+          price: "₮10,500",
           desc: "with ketchup",
           img: "/hool/Fries.jpg",
         },
         {
           name: "Homemade potato wedges",
-          price: "₮11,500",
+          price: "₮9,500",
           desc: "ketchup, ranch sauce",
           img: "/hool/Potato-Wedges1.jpg",
         },
         {
           name: "steamed rice",
-          price: "₮2000",
+          price: "₮2,000",
           desc: "seasame seeds",
           img: "/hool/Rice.jpeg",
+        },
+      ],
+    },
+    {
+      category: "Beer & Drinks",
+      items: [
+        {
+          name: "Cass 500ml",
+          price: "₮10,000",
+          desc: "Korea's No.1 beer",
+          img: "/hool/Bear & Soda/Cass 500ml.webp",
+        },
+        {
+          name: "Soju 360ml",
+          price: "₮15,000",
+          desc: "Korea's No.1 spirit",
+          img: "/hool/Bear & Soda/Soju 360ml.jpg",
+        },
+        {
+          name: "TSINGTAO 500ml",
+          price: "₮10,000",
+          desc: "China's No.1 beer",
+          img: "/hool/Bear & Soda/TSINGTAO 500ml.jpeg",
+        },
+        {
+          name: "Terra 500ml",
+          price: "₮10,000",
+          desc: "Korea's No.2 beer",
+          img: "/hool/Bear & Soda/Terra 500ml.webp",
+        },
+      ],
+    },
+    {
+      category: "Water & Soft Drinks",
+      items: [
+        {
+          name: "Sprite 330ml",
+          price: "₮6,000",
+          desc: "Lemon lime soda",
+          img: "/hool/Bear & Soda/Sprite 330ml.avif",
+        },
+        {
+          name: "Coca-Cola 330ml",
+          price: "₮6,000",
+          desc: "Classic Coke",
+          img: "/hool/Bear & Soda/Coca-Cola 330ml.webp",
+        },
+        {
+          name: "Fanta 500ml",
+          price: "₮3,000",
+          desc: "Orange soda",
+          img: "/hool/Bear & Soda/fanta-500ml.png",
+        },
+        {
+          name: "Coca Cola 500ml",
+          price: "₮3,000",
+          desc: "Classic Coke",
+          img: "/hool/Bear & Soda/Coca-Cola 500ml.webp",
+        },
+        {
+          name: "Bonaqua 500ml",
+          price: "₮2,500",
+          desc: "Mineral water",
+          img: "/hool/Bear & Soda/Bonaqua 500ml.webp",
+        },
+        {
+          name: "Ooha 500ml",
+          price: "₮2,500",
+          desc: "Mineral water",
+          img: "/hool/Bear & Soda/Ooha 500ml.jpg",
         },
       ],
     },
@@ -215,29 +298,62 @@ export default function Garage07QRMenu() {
         </header>
 
         {/* CATEGORY BAR */}
-        <div
-          className="w-full mb-4 overflow-x-auto scrollbar-hide flex-shrink-0"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          <div className="flex space-x-3 px-6">
+
+        <div className="relative w-full mb-4 flex-shrink-0">
+          {/* Scrollable list */}
+          <div
+            ref={scrollRef}
+            className="overflow-x-auto scrollbar-hide flex space-x-3 px-10 scroll-smooth"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             {menu.map((cat) => (
-              <button
+              <motion.button
                 key={cat.category}
                 onClick={() => setActiveCategory(cat.category)}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{
+                  scale: 1.08,
+                  backgroundColor:
+                    activeCategory === cat.category
+                      ? "#a7ffea"
+                      : "rgba(167,255,234,0.08)",
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className={`whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold transition-all
-                ${
-                  activeCategory === cat.category
-                    ? "bg-[#a7ffea] text-black border-[#a7ffea]"
-                    : "bg-transparent text-[#a7ffea]/80 border-[#a7ffea]/40 hover:text-white"
-                }`}
+          ${
+            activeCategory === cat.category
+              ? "bg-[#a7ffea] text-black border-[#a7ffea]"
+              : "bg-transparent text-[#a7ffea]/80 border-[#a7ffea]/40"
+          }`}
               >
                 {cat.category}
-              </button>
+              </motion.button>
             ))}
           </div>
+
+          {/* Left Arrow */}
+          <button
+            onClick={() => scrollBy(-150)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-1.5 rounded-full z-10 backdrop-blur-sm transition"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => scrollBy(150)}
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-1.5 rounded-full z-10 backdrop-blur-sm transition"
+          >
+            <ChevronRight size={18} />
+          </button>
+
+          {/* Fade edges */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-[#0b0b0d] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-[#0b0b0d] to-transparent" />
+
           <style jsx>{`
             div::-webkit-scrollbar {
-              display: none; /* Chrome, Safari */
+              display: none;
             }
           `}</style>
         </div>
