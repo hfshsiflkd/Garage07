@@ -44,7 +44,7 @@ router.post("/:category/items", async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    menuCategory.items.push({ name, price, desc, img });
+    menuCategory.items.push({ name, price, desc, img , available: true });
     await menuCategory.save();
 
     res.status(201).json(menuCategory);
@@ -87,6 +87,38 @@ router.delete(
       res.json({ message: `${itemName} removed from ${category}` });
     } catch (error) {
       res.status(500).json({ message: "Error deleting item" });
+    }
+  }
+);
+
+router.put(
+  "/:category/items/:itemName/availability",
+  async (req: Request, res: Response) => {
+    try {
+      const { category, itemName } = req.params;
+
+      const menuCategory = await Menu.findOne({ category });
+      if (!menuCategory) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+
+      const item = menuCategory.items.find((i) => i.name === itemName);
+      if (!item) {
+        return res.status(404).json({ message: "Item not found" });
+      }
+
+      item.available = !item.available;
+      await menuCategory.save();
+
+      res.json({
+        message: `${itemName} is now ${
+          item.available ? "available" : "unavailable"
+        }`,
+        updatedItem: item,
+      });
+    } catch (error) {
+      console.error("❌ Error toggling item availability:", error);
+      res.status(500).json({ message: "Error updating availability" });
     }
   }
 );

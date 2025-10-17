@@ -5,6 +5,7 @@ interface IMenuItem {
   price: string;
   desc: string;
   img: string;
+  available: boolean;
 }
 
 export interface IMenuCategory extends Document {
@@ -17,6 +18,7 @@ const MenuItemSchema = new Schema<IMenuItem>({
   price: { type: String, required: true },
   desc: String,
   img: String,
+  available: { type: Boolean, default: true },
 });
 
 const MenuCategorySchema = new Schema<IMenuCategory>({

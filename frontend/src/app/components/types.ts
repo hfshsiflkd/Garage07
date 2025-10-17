@@ -1,4 +1,5 @@
 export type MenuItem = {
+  available: boolean;
   name: string;
   price: string;
   desc: string;
