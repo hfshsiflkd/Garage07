@@ -123,38 +123,4 @@ router.put(
   }
 );
 
-// // 🟢 6. Item update хийх
-// router.put("/:category/items/:itemName", async (req: Request, res: Response) => {
-//   try {
-//     const { category, itemName } = req.params;
-//     const { name, price, desc, img } = req.body;
-
-//     const menuCategory = await Menu.findOne({ category });
-//     if (!menuCategory) {
-//       return res.status(404).json({ message: "Category not found" });
-//     }
-
-//     const item = menuCategory.items.find((i) => i.name === itemName);
-//     if (!item) {
-//       return res.status(404).json({ message: "Item not found" });
-//     }
-
-//     // 🧩 талбаруудыг шинэчлэх
-//     if (name) item.name = name;
-//     if (price) item.price = price;
-//     if (desc) item.desc = desc;
-//     if (img) item.img = img;
-
-//     await menuCategory.save();
-
-//     res.json({
-//       message: `${itemName} updated successfully`,
-//       updatedItem: item,
-//     });
-//   } catch (error) {
-//     console.error("❌ Error updating item:", error);
-//     res.status(500).json({ message: "Error updating item" });
-//   }
-// });
-
 export default router;
