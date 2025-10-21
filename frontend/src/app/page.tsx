@@ -6,6 +6,8 @@ import CategoryBar from "./components/CategoryBar";
 import MenuList from "./components/MenuList";
 import MenuItemModal from "./components/MenuItemModal";
 import Footer from "./components/Footer";
+import FancyBackground from "./components/FancyBackground";
+import LoadingScreen from "./components/LoadingScreen";
 import { MenuCategory, MenuItem } from "./components/types";
 import { API } from "./config";
 
@@ -18,9 +20,7 @@ export default function Garage07QRMenu() {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const res = await axios.get<MenuCategory[]>(
-          `${API}/api/menu`
-        );
+        const res = await axios.get<MenuCategory[]>(`${API}/api/menu`);
         setMenu(res.data);
       } catch (err) {
         console.error("Menu fetch error:", err);
@@ -28,52 +28,53 @@ export default function Garage07QRMenu() {
         setLoading(false);
       }
     };
-
     fetchMenu();
   }, []);
 
   const activeItems =
     menu.find((cat) => cat.category === activeCategory)?.items || [];
 
- if (loading)
-   return (
-     <div className="min-h-screen flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#0d1117] to-[#1a1f25] text-white">
-       {/* 🍳 Animated cooking pan */}
-       <div className="relative w-20 h-20 mb-6 flex items-center justify-center">
-         <div className="absolute inset-0 border-4 border-t-[#a7ffea] border-[#333] rounded-full animate-spin"></div>
-         <div className="absolute w-10 h-10 bg-[#a7ffea] rounded-full animate-ping opacity-20"></div>
-         <span className="text-4xl animate-bounce">🍳</span>
-       </div>
-
-       {/* Texts */}
-       <h2 className="text-lg font-semibold text-[#a7ffea] animate-pulse">
-         Хоолны цэсийг бэлтгэж байна...
-       </h2>
-       <p className="text-sm text-gray-400 mt-2 italic">
-         Түр хүлээнэ үү — тогооч таны хоолыг хайртайгаар халааж байна 🔥
-       </p>
-     </div>
-   );
+  if (loading) {
+    return (
+      <>
+        <FancyBackground speed={1} intensity={0.5} />
+        <LoadingScreen />
+      </>
+    );
+  }
 
   return (
-    <div
-      className="min-h-screen text-white antialiased p-4 flex items-center justify-center relative"
-      style={{
-        backgroundImage: "url('/hool/black-background.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="min-h-screen text-white antialiased p-4 flex items-center justify-center relative">
+      {/* ✨ Fancy animated background */}
+      <FancyBackground
+        image="/hool/black-background.jpg"
+        speed={1.1}
+        intensity={0.6}
+      />
+
       <main className="w-full max-w-md h-[90vh] bg-gradient-to-b from-[#0b0b0d]/80 via-[#0b0b0d]/60 to-[#0b0b0d]/80 rounded-2xl shadow-2xl p-6 relative flex flex-col overflow-hidden">
-        <Header />
+        <Header
+          title="Garage"
+          subtitle="Wheel • Good music • Late nights"
+          onMapClick={() =>
+            window.open("https://maps.app.goo.gl/UG6oX1xRfvL3oDSj6", "_blank")
+          }
+        />
+
         <CategoryBar
           menu={menu}
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
         />
+
         <MenuList items={activeItems} onSelect={setSelectedItem} />
-        <Footer/>
-        
+
+        <Footer
+          open="12:00"
+          close="00:00"
+          phone={["+976 80247456", "+976 88890048", "+976 91136890"]}
+          instagram="@the07.garage"
+        />
       </main>
 
       {selectedItem && (
