@@ -1,7 +1,8 @@
 export type MenuItem = {
+  _id(_id: unknown): unknown;
   available: boolean;
   name: string;
-  price: string;
+  price: number;
   desc: string;
   img: string;
 };

@@ -35,12 +35,25 @@ export default function Garage07QRMenu() {
   const activeItems =
     menu.find((cat) => cat.category === activeCategory)?.items || [];
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading menu...
-      </div>
-    );
+ if (loading)
+   return (
+     <div className="min-h-screen flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#0d1117] to-[#1a1f25] text-white">
+       {/* 🍳 Animated cooking pan */}
+       <div className="relative w-20 h-20 mb-6 flex items-center justify-center">
+         <div className="absolute inset-0 border-4 border-t-[#a7ffea] border-[#333] rounded-full animate-spin"></div>
+         <div className="absolute w-10 h-10 bg-[#a7ffea] rounded-full animate-ping opacity-20"></div>
+         <span className="text-4xl animate-bounce">🍳</span>
+       </div>
+
+       {/* Texts */}
+       <h2 className="text-lg font-semibold text-[#a7ffea] animate-pulse">
+         Хоолны цэсийг бэлтгэж байна...
+       </h2>
+       <p className="text-sm text-gray-400 mt-2 italic">
+         Түр хүлээнэ үү — тогооч таны хоолыг хайртайгаар халааж байна 🔥
+       </p>
+     </div>
+   );
 
   return (
     <div

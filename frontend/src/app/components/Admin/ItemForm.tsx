@@ -15,16 +15,18 @@ export default function ItemForm({
   const [newItem, setNewItem] = useState({
     category: "",
     name: "",
-    price: "",
+    price: "", // input дээр string бариад серверт явуулахдаа тоо болгоно
     desc: "",
     img: "",
   });
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  // 🖼️ Cloudinary зураг upload
+  // 🖼️ Cloudinary зураг upload (API таных руу formdata илгээж байгаа)
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const formData = new FormData();
     formData.append("file", file);
 
@@ -33,11 +35,9 @@ export default function ItemForm({
       const res = await axios.post<{ url: string }>(
         `${API}/api/upload`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-      setNewItem({ ...newItem, img: res.data.url });
+      setNewItem((p) => ({ ...p, img: res.data.url }));
     } catch (err) {
       console.error("❌ Upload error:", err);
       alert("Зураг upload алдаа гарлаа");
@@ -46,24 +46,55 @@ export default function ItemForm({
     }
   };
 
+  // Туслах: мөнгөн текстийг тоо болгох
+  const toNumber = (v: string) => Number(String(v).replace(/[^\d.-]/g, ""));
+
+  // ✨ Submit боломжтой эсэх (зураг заавал байх ёстой)
+  const priceNum = toNumber(newItem.price);
+  const canSubmit =
+    !!newItem.category &&
+    !!newItem.name.trim() &&
+    !Number.isNaN(priceNum) &&
+    priceNum >= 0 &&
+    !!newItem.img && // ← Зураг байх ёстой
+    !uploading &&
+    !submitting;
+
   // 🍽️ Хоол нэмэх
   const addItem = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { category, name, price, desc, img } = newItem;
-    if (!category || !name) return alert("Категори болон нэр шаардлагатай!");
+
+    // Хэрэглэгч шууд submit дарвал дахин шалгая
+    if (!newItem.img) {
+      alert("Зураг заавал оруулна уу.");
+      return;
+    }
+    if (!newItem.category || !newItem.name.trim()) {
+      alert("Категори болон нэрийг бөглөнө үү.");
+      return;
+    }
+    if (Number.isNaN(priceNum)) {
+      alert("Үнэ буруу. Тоо оруулна уу.");
+      return;
+    }
 
     try {
-      await axios.post(`${API}/api/menu/${category}/items`, {
-        name,
-        price,
-        desc,
-        img,
+      setSubmitting(true);
+      await axios.post(`${API}/api/menu/${encodeURIComponent(newItem.category)}/items`, {
+        name: newItem.name.trim(),
+        price: priceNum,
+        desc: newItem.desc.trim(),
+        img: newItem.img,
       });
+
+      // Reset
       setNewItem({ category: "", name: "", price: "", desc: "", img: "" });
       onSuccess();
     } catch (err) {
       console.error("❌ Add item error:", err);
       alert("Хоол нэмэхэд алдаа гарлаа");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -71,6 +102,7 @@ export default function ItemForm({
     <form
       onSubmit={addItem}
       className="bg-[#151518] p-4 rounded-lg border border-gray-700 grid gap-3"
+      noValidate
     >
       <h2 className="text-lg font-semibold text-[#a7ffea]">Шинэ хоол нэмэх</h2>
 
@@ -78,6 +110,7 @@ export default function ItemForm({
         value={newItem.category}
         onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
         className="p-2 bg-black border border-gray-700 rounded-md"
+        required
       >
         <option value="">Категори сонгох...</option>
         {menu.map((cat) => (
@@ -93,18 +126,23 @@ export default function ItemForm({
         value={newItem.name}
         onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
         className="p-2 bg-black border border-gray-700 rounded-md"
+        required
       />
 
       <input
-        type="text"
+        type="number"
         placeholder="Үнэ"
         value={newItem.price}
         onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
         className="p-2 bg-black border border-gray-700 rounded-md"
+        inputMode="numeric"
+        min={0}
+        step="1"
+        required
       />
 
       <textarea
-        placeholder="Тайлбар"
+        placeholder="Тайлбар (сонголттой)"
         value={newItem.desc}
         onChange={(e) => setNewItem({ ...newItem, desc: e.target.value })}
         className="p-2 bg-black border border-gray-700 rounded-md"
@@ -123,27 +161,34 @@ export default function ItemForm({
           file:bg-[#a7ffea] file:text-black
           hover:file:bg-[#8cf6db]"
         />
+
         {uploading && <p className="text-gray-400 mt-1">Uploading...</p>}
-        {newItem.img && (
+
+        {newItem.img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={newItem.img}
             alt="Preview"
             className="mt-2 rounded-md w-32 h-32 object-cover border border-gray-700"
           />
+        ) : (
+          <p className="text-xs text-red-400 mt-2">
+            Зураг оруулсны дараа Add Item идэвхжинэ
+          </p>
         )}
       </div>
 
       <button
         type="submit"
-        disabled={uploading}
+        disabled={!canSubmit}
         className={`font-semibold py-2 rounded-md w-full ${
-          uploading
+          !canSubmit
             ? "bg-gray-500 text-gray-300 cursor-not-allowed"
             : "bg-[#a7ffea] text-black hover:bg-[#8cf6db]"
         }`}
+        title={!newItem.img ? "Зураг оруулна уу" : ""}
       >
-        {uploading ? "Uploading image..." : "Add Item"}
+        {uploading || submitting ? "Түр хүлээнэ үү..." : "Add Item"}
       </button>
     </form>
   );

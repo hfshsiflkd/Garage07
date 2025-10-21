@@ -50,7 +50,7 @@ export default function MenuList({ items, onSelect }: Props) {
             </div>
 
             {/* 💰 Үнэ */}
-            <div className="text-right font-semibold">{it.price}</div>
+            <div className="text-right font-semibold">₮{it.price}</div>
           </li>
         ))}
       </ul>

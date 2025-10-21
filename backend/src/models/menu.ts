@@ -1,29 +1,23 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
-interface IMenuItem {
-  name: string;
-  price: string;
-  desc: string;
-  img: string;
-  available: boolean;
-}
+const MenuItemSchema = new Schema(
+  {
+    _id: { type: Schema.Types.ObjectId, default: () => new Types.ObjectId() }, 
+    name: { type: String, required: true, trim: true },
+    price: { type: Number, required: true, min: 0 },
+    desc: { type: String, default: "" },
+    img: { type: String, default: "" },
+    available: { type: Boolean, default: true },
+  },
+  { timestamps: true } 
+);
 
-export interface IMenuCategory extends Document {
-  category: string;
-  items: IMenuItem[];
-}
+const MenuSchema = new Schema(
+  {
+    category: { type: String, required: true, unique: true, trim: true },
+    items: { type: [MenuItemSchema], default: [] },
+  },
+  { timestamps: true }
+);
 
-const MenuItemSchema = new Schema<IMenuItem>({
-  name: { type: String, required: true },
-  price: { type: String, required: true },
-  desc: String,
-  img: String,
-  available: { type: Boolean, default: true },
-});
-
-const MenuCategorySchema = new Schema<IMenuCategory>({
-  category: { type: String, required: true },
-  items: [MenuItemSchema],
-});
-
-export default mongoose.model<IMenuCategory>("Menu", MenuCategorySchema);
+export default model("Menu", MenuSchema);

@@ -8,28 +8,30 @@ import { MenuCategory, MenuItem } from "@/app/components/types";
 
 // 🟢 Cloudinary upload helper
 async function uploadToCloudinary(file: File): Promise<string> {
-  const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+  const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
+  const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
 
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET!);
+  formData.append("upload_preset", UPLOAD_PRESET);
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-    {
-      method: "POST",
-      body: formData,
-    }
+    { method: "POST", body: formData }
   );
   const data = await res.json();
-  return data.secure_url;
+  if (!res.ok || !data?.secure_url) {
+    throw new Error(data?.error?.message || "Cloudinary upload failed");
+  }
+  return data.secure_url as string;
 }
 
 type Props = {
   menu: MenuCategory[];
   onDeleteSuccess: () => void;
 };
+
+
 
 export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
   const [updating, setUpdating] = useState(false);
@@ -46,32 +48,37 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
     img: "",
   });
 
-  // 🟡 Item устгах
-  const handleDeleteItem = async (cat: string, itemName: string) => {
-    if (!confirm(`${itemName} устгах уу?`)) return;
+  const handleDeleteItem = async (cat: string, itemId: string) => {
+    if (!confirm(`Энэ хоолыг устгах уу?`)) return;
     try {
       setUpdating(true);
-      await axios.delete(`${API}/api/menu/${cat}/items/${itemName}`);
+      await axios.delete(
+        `${API}/api/menu/${encodeURIComponent(cat)}/items/${encodeURIComponent(
+          itemId
+        )}`
+      );
       onDeleteSuccess();
     } catch (err) {
       console.error("❌ Delete item error:", err);
+      alert("Устгахад алдаа гарлаа.");
     } finally {
       setUpdating(false);
     }
   };
 
-  // 🟢 Available toggle
-  const toggleAvailability = async (cat: string, itemName: string) => {
+  // 🟢 Available toggle (ID-гаар)
+  const toggleAvailability = async (cat: string, itemId: string) => {
     try {
       setUpdating(true);
       await axios.put(
-        `${API}/api/menu/${encodeURIComponent(cat)}/items/${encodeURIComponent(
-          itemName
-        )}/availability`
+        `${API}/api/menu/${encodeURIComponent(
+          cat
+        )}/items/${encodeURIComponent(itemId)}/availability`
       );
       onDeleteSuccess();
     } catch (err) {
       console.error("❌ Toggle availability error:", err);
+      alert("Төлөв солиход алдаа гарлаа.");
     } finally {
       setUpdating(false);
     }
@@ -104,22 +111,51 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
     }
   };
 
-  // 💾 Засвар хадгалах
+  // 💾 Засвар хадгалах (ID-гаар update)
   const handleUpdate = async () => {
     if (!editingItem) return;
     try {
       setUpdating(true);
+
+      // үнэ бол заавал тоо байх ёстой
+      const priceNum = Number(form.price);
+      if (Number.isNaN(priceNum)) {
+        alert("Үнэ буруу. Тоо оруулна уу.");
+        setUpdating(false);
+        return;
+      }
+
       await axios.put(
         `${API}/api/menu/${encodeURIComponent(
           editingItem.category
-        )}/items/${encodeURIComponent(editingItem.item.name)}`,
-        form
+        )}/items/${encodeURIComponent(String(editingItem.item._id))}`,
+        {
+          name: form.name.trim(),
+          price: priceNum,
+          desc: form.desc.trim(),
+          img: form.img.trim(),
+        }
       );
+
       onDeleteSuccess();
       setEditingItem(null);
     } catch (err) {
       console.error("❌ Update item error:", err);
       alert("Засвар хадгалахад алдаа гарлаа.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDeleteCategory = async (cat: string) => {
+    if (!confirm(`${cat} категори устгах уу?`)) return;
+    try {
+      setUpdating(true);
+      await axios.delete(`${API}/api/menu/${encodeURIComponent(cat)}`);
+      onDeleteSuccess();
+    } catch (err) {
+      console.error("❌ Delete category error:", err);
+      alert("Категори устгахад алдаа гарлаа.");
     } finally {
       setUpdating(false);
     }
@@ -134,12 +170,19 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
         >
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-xl font-bold text-[#a7ffea]">{cat.category}</h2>
+            <button
+              onClick={() => handleDeleteCategory(cat.category)}
+              disabled={updating}
+              className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded-md text-sm"
+            >
+              Категори устгах
+            </button>
           </div>
 
           <div className="space-y-2">
             {cat.items.map((it) => (
               <div
-                key={it.name}
+                key={String(it._id)}
                 className={`flex justify-between items-center p-3 rounded-md border border-gray-700 ${
                   it.available ? "bg-[#1a1a1c]" : "bg-[#1a1a1c]/50 opacity-50"
                 }`}
@@ -158,13 +201,15 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
                   )}
                   <div>
                     <div className="font-semibold">{it.name}</div>
-                    <div className="text-sm text-gray-400">{it.price}</div>
+                    <div className="text-sm text-gray-400">₮{it.price}</div>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <button
-                    onClick={() => toggleAvailability(cat.category, it.name)}
+                    onClick={() =>
+                      toggleAvailability(cat.category, String(it._id))
+                    } // ✅
                     disabled={updating}
                     className={`px-3 py-1 rounded-md text-sm ${
                       it.available
@@ -183,7 +228,9 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
                   </button>
 
                   <button
-                    onClick={() => handleDeleteItem(cat.category, it.name)}
+                    onClick={() =>
+                      handleDeleteItem(cat.category, String(it._id))
+                    } // ✅
                     className="px-3 py-1 bg-red-600 hover:bg-red-700 text-sm rounded-md"
                   >
                     Устгах
@@ -213,7 +260,8 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
 
             <label className="block text-sm mb-1">Үнэ</label>
             <input
-              type="number"
+            type="number"
+              inputMode="decimal"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               className="w-full bg-[#111] border border-gray-600 rounded-md p-2 mb-2"
@@ -230,6 +278,7 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
               Зураг (Cloudinary upload)
             </label>
             {form.img && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={form.img}
                 alt="preview"
