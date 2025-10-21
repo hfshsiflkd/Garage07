@@ -10,6 +10,7 @@ import FancyBackground from "./components/FancyBackground";
 import LoadingScreen from "./components/LoadingScreen";
 import { MenuCategory, MenuItem } from "./components/types";
 import { API } from "./config";
+import AnimatedBackground from "./components/AnimatedBackground";
 
 export default function Garage07QRMenu() {
   const [menu, setMenu] = useState<MenuCategory[]>([]);
@@ -45,12 +46,7 @@ export default function Garage07QRMenu() {
 
   return (
     <div className="min-h-screen text-white antialiased p-4 flex items-center justify-center relative">
-      {/* ✨ Fancy animated background */}
-      <FancyBackground
-        image="/hool/black-background.jpg"
-        speed={1.1}
-        intensity={0.6}
-      />
+      <AnimatedBackground speed={1.1} intensity={0.6} />
 
       <main className="w-full max-w-md h-[90vh] bg-gradient-to-b from-[#0b0b0d]/80 via-[#0b0b0d]/60 to-[#0b0b0d]/80 rounded-2xl shadow-2xl p-6 relative flex flex-col overflow-hidden">
         <Header
