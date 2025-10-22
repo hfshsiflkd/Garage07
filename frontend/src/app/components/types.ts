@@ -1,4 +1,5 @@
 export type MenuItem = {
+  id: unknown;
   veg: unknown;
   spicy: unknown;
   _id(_id: unknown): unknown;

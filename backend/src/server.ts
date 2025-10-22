@@ -5,6 +5,7 @@ import morgan from "morgan";
 import menuRoutes from "./routes/menu.routes";
 import uploadRouter from "./routes/upload";
 import { connectDB } from "./config/DB";
+import feedbackRoutes from "./routes/feedback.routes";
 
 // 🌱 Орчны хувьсагчийг ачаалах
 dotenv.config();
@@ -29,6 +30,7 @@ app.get("/", (_req: Request, res: Response) => {
 // 📦 Routes
 app.use("/api/menu", menuRoutes);
 app.use("/api/upload", uploadRouter);
+app.use("/api/feedback", feedbackRoutes);
 
 // ⚙️ Алдааны баригч middleware (хэрэв байгаа бол)
 import { errorMiddleware } from "./middlewares/error.middleware";

@@ -6,3 +6,4 @@ export { default as updateItemById } from "./updateItemById";
 export { default as toggleAvailabilityById } from "./toggleAvailabilityById";
 export { default as deleteItemById } from "./deleteItemById";
 export { default as deleteCategory } from "./deleteCategory";
+export { default as renameCategory } from "./renameCategory";

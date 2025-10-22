@@ -6,6 +6,8 @@ import {
   addItemSchema,
   updateItemSchema,
   itemIdParamSchema,
+  renameCategoryParamsSchema,
+  renameCategoryBodySchema,
 } from "../validators/ menu.validators";
 
 import {
@@ -17,6 +19,8 @@ import {
   toggleAvailabilityById,
   deleteItemById,
   deleteCategory,
+  renameCategory,
+  
 } from "../controllers/menu/ index";
 
 const router = Router();
@@ -56,6 +60,13 @@ router.delete(
   "/:category/items/:itemId",
   validate(itemIdParamSchema),
   asyncHandler(deleteItemById)
+);
+
+router.put(
+  "/:category",
+  validate(renameCategoryParamsSchema),
+  validate(renameCategoryBodySchema),
+  asyncHandler(renameCategory)
 );
 
 // Category устгах
