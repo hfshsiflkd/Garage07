@@ -112,14 +112,8 @@ export default function MenuList({ items, onSelect }: Props) {
                   </div>
                 </div>
 
-                {/* Corner ribbon — mobile дээр хэт дарамт болдог тул зөвхөн md↑ */}
-                {isAvailable && (
-                  <div className="pointer-events-none absolute -right-1 -top-1 hidden md:block">
-                    <div className="px-2 py-0.5 rounded-bl-lg rounded-tr-lg text-[10px] font-semibold bg-[#a7ffea] text-black shadow">
-                      Шинэ
-                    </div>
-                  </div>
-                )}
+               
+                
               </div>
             </motion.li>
           );

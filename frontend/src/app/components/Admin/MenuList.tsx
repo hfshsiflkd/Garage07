@@ -71,9 +71,9 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
     try {
       setUpdating(true);
       await axios.put(
-        `${API}/api/menu/${encodeURIComponent(
-          cat
-        )}/items/${encodeURIComponent(itemId)}/availability`
+        `${API}/api/menu/${encodeURIComponent(cat)}/items/${encodeURIComponent(
+          itemId
+        )}/availability`
       );
       onDeleteSuccess();
     } catch (err) {
@@ -117,10 +117,40 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
     try {
       setUpdating(true);
 
-      // үнэ бол заавал тоо байх ёстой
+      const original = editingItem.item;
+      const newName = form.name.trim();
+      const newDesc = form.desc.trim();
+      const newImg = (form.img || "").trim();
+
+      // Үнэ бол заавал тоо
       const priceNum = Number(form.price);
       if (Number.isNaN(priceNum)) {
         alert("Үнэ буруу. Тоо оруулна уу.");
+        setUpdating(false);
+        return;
+      }
+
+      // ✅ Зөвхөн өөрчлөгдсөн талбаруудыг явуулах
+      const payload: Record<string, unknown> = {};
+
+      if (newName !== original.name) payload.name = newName;
+      payload.price = priceNum;
+      if (newDesc !== (original.desc || "")) payload.desc = newDesc;
+
+      // 🖼 Зургийн логик:
+      // 1) Хэрэв хэрэглэгч зургаа устгасан (хоосолсон) бол:
+      if (!newImg && (original.img || "") !== "") {
+        payload.removeImage = true;
+      }
+      // 2) Хэрэв шинэ зураг байгаад хуучнаасаа ялгаатай бол:
+      else if (newImg && newImg !== (original.img || "")) {
+        payload.img = newImg;
+      }
+      // 3) Хэрвээ өөрчлөгдөөгүй бол img/ removeImage аль алиныг нь бүү явуул
+
+      // Хэрэв өөрчлөлт огт байхгүй бол сервер рүү хүсэлт илгээхгүй
+      if (Object.keys(payload).length === 0) {
+        alert("Өөрчилсөн зүйл алга байна.");
         setUpdating(false);
         return;
       }
@@ -129,12 +159,7 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
         `${API}/api/menu/${encodeURIComponent(
           editingItem.category
         )}/items/${encodeURIComponent(String(editingItem.item._id))}`,
-        {
-          name: form.name.trim(),
-          price: priceNum,
-          desc: form.desc.trim(),
-          img: form.img.trim(),
-        }
+        payload
       );
 
       onDeleteSuccess();
@@ -260,7 +285,7 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
 
             <label className="block text-sm mb-1">Үнэ</label>
             <input
-            type="number"
+              type="number"
               inputMode="decimal"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
