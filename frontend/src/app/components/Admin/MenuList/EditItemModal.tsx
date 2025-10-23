@@ -107,11 +107,11 @@ export default function EditItemModal({ item, onClose, onSave }: Props) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 grid place-items-center p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 grid place-items-center p-4 "
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm bg-[#1a1a1d] border border-white/10 rounded-2xl p-5"
+        className="w-full  max-w-sm bg-[#1a1a1d] border border-red-500 border-white/10 rounded-2xl p-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
