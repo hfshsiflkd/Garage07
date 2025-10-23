@@ -9,6 +9,8 @@ import CategoryForm from "@/app/components/Admin/CategoryForm";
 import ItemForm from "@/app/components/Admin/ItemForm";
 import MenuList from "@/app/components/Admin/MenuList";
 import FeedbackList from "@/app/components/Admin/FeedbackList";
+import FancyBackground from "../components/FancyBackground";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function AdminDashboard() {
   const [menu, setMenu] = useState<MenuCategory[]>([]);
@@ -32,12 +34,14 @@ export default function AdminDashboard() {
     fetchMenu();
   }, []);
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-300">
-        Loading menu...
-      </div>
-    );
+  if (loading) {
+      return (
+        <>
+          <FancyBackground speed={1} intensity={0.5} />
+          <LoadingScreen />
+        </>
+      );
+    }
 
   return (
     <div className="min-h-screen bg-[#0b0b0d] text-white py-6 md:py-8">
