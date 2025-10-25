@@ -2,6 +2,7 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Metadata } from "next";
 import { CurrencyProvider } from "./context/CurrencyContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 
 const inter = Inter({
@@ -58,7 +59,9 @@ export default function RootLayout({
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        <CurrencyProvider>{children}</CurrencyProvider>
+        <LanguageProvider>
+          <CurrencyProvider>{children}</CurrencyProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

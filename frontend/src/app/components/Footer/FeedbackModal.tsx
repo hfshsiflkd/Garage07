@@ -1,5 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLang } from "@/app/context/LanguageContext";
 
 type FeedbackState = {
   fbName: string;
@@ -24,6 +25,32 @@ export default function FeedbackModal({
   state: FeedbackState;
   onSubmit: (e: React.FormEvent) => void;
 }) {
+  const { lang } = useLang();
+  const T =
+    lang === "mn"
+      ? {
+          title: "Санал хүсэлт",
+          name: "Нэр",
+          namePh: "Таны нэр",
+          msg: "Санал / хүсэлт",
+          msgPh: "Бидэнд хэлэх зүйлээ энд бичнэ үү...",
+          send: "Илгээх",
+          sending: "Илгээж байна...",
+          success: "✅ Санал хүсэлтийг хүлээн авлаа. Баярлалаа!",
+          close: "Хаах",
+        }
+      : {
+          title: "Feedback",
+          name: "Name",
+          namePh: "Your name",
+          msg: "Message",
+          msgPh: "Write your message here…",
+          send: "Send",
+          sending: "Sending…",
+          success: "✅ Thanks! Your feedback has been received.",
+          close: "Close",
+        };
+
   const {
     fbName,
     setFbName,
@@ -45,6 +72,8 @@ export default function FeedbackModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
+          aria-modal
+          role="dialog"
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -56,11 +85,13 @@ export default function FeedbackModal({
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-[#a7ffea]">
-                Санал хүсэлт
+                {T.title}
               </h3>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-white p-1"
+                aria-label={T.close}
+                title={T.close}
               >
                 ✕
               </button>
@@ -68,7 +99,7 @@ export default function FeedbackModal({
 
             {fbSuccess && (
               <div className="mb-3 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 px-3 py-2 text-sm">
-                ✅ Санал хүсэлтийг хүлээн авлаа. Баярлалаа!
+                {T.success}
               </div>
             )}
             {fbError && (
@@ -89,28 +120,30 @@ export default function FeedbackModal({
               />
 
               <div>
-                <label className="text-sm text-gray-300">Нэр</label>
+                <label className="text-sm text-gray-300">{T.name}</label>
                 <input
                   type="text"
                   value={fbName}
                   onChange={(e) => setFbName(e.target.value)}
-                  placeholder="Таны нэр"
+                  placeholder={T.namePh}
                   className="w-full mt-1 p-2 rounded-md bg-black/40 border border-gray-700 text-sm"
                   required
                   maxLength={80}
                 />
               </div>
+
               <div>
-                <label className="text-sm text-gray-300">Санал / хүсэлт</label>
+                <label className="text-sm text-gray-300">{T.msg}</label>
                 <textarea
                   value={fbMsg}
                   onChange={(e) => setFbMsg(e.target.value)}
-                  placeholder="Бидэнд хэлэх зүйлээ энд бичнэ үү..."
+                  placeholder={T.msgPh}
                   className="w-full mt-1 p-2 rounded-md bg-black/40 border border-gray-700 text-sm h-24"
                   required
                   maxLength={2000}
                 />
               </div>
+
               <button
                 type="submit"
                 disabled={fbLoading}
@@ -120,7 +153,7 @@ export default function FeedbackModal({
                     : "bg-[#a7ffea] text-black hover:bg-[#8cf6db]"
                 }`}
               >
-                {fbLoading ? "Илгээж байна..." : "Илгээх"}
+                {fbLoading ? T.sending : T.send}
               </button>
             </form>
           </motion.div>

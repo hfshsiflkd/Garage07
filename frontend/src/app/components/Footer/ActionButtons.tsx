@@ -1,5 +1,6 @@
 "use client";
 import { Phone, Instagram } from "lucide-react";
+import { useLang } from "@/app/context/LanguageContext";
 
 export default function ActionButtons({
   phones,
@@ -14,6 +15,13 @@ export default function ActionButtons({
   onOpenFeedback: () => void;
   onOpenInstagram: () => void;
 }) {
+  const { lang } = useLang();
+
+  const t =
+    lang === "mn"
+      ? { call: "Залгах", insta: "Instagram", feedback: "Санал" }
+      : { call: "Call", insta: "Instagram", feedback: "Feedback" };
+
   return (
     <div className="mt-2 grid grid-cols-3 gap-2">
       <button
@@ -25,7 +33,7 @@ export default function ActionButtons({
       >
         <span className="inline-flex items-center gap-1">
           <Phone size={16} />
-          <span className="text-sm">Залгах</span>
+          <span className="text-sm">{t.call}</span>
         </span>
       </button>
 
@@ -38,7 +46,7 @@ export default function ActionButtons({
       >
         <span className="inline-flex items-center gap-1">
           <Instagram size={16} className="text-[#a7ffea]" />
-          <span className="text-sm">Instagram</span>
+          <span className="text-sm">{t.insta}</span>
         </span>
       </button>
 
@@ -48,7 +56,7 @@ export default function ActionButtons({
       >
         <span className="inline-flex items-center gap-1">
           💬
-          <span className="text-sm">Санал</span>
+          <span className="text-sm">{t.feedback}</span>
         </span>
       </button>
     </div>

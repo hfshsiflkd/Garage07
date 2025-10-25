@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { useCurrency } from "@/app/context/CurrencyContext";
+import { useLang } from "@/app/context/LanguageContext";
 
 type HeaderProps = {
   title?: string;
@@ -17,6 +18,7 @@ export default function Header({
   onMapClick,
 }: HeaderProps) {
   const { currency, toggle } = useCurrency();
+  const { toggleLang } = useLang();
 
   return (
     <header className="sticky top-0 z-20 -mx-3 -mt-3 px-3 pt-3 pb-2 mb-5">
@@ -50,7 +52,10 @@ export default function Header({
           <div className="flex items-center gap-2">
             {/* Валют солих товч */}
             <button
-              onClick={toggle}
+              onClick={() => {
+                toggle(); // ₮ ↔ $
+                toggleLang(); // Монгол ↔ English
+              }}
               className="h-10 w-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-[0.97] transition border border-white/10"
               aria-label="Валют солих"
               title="Валют солих"

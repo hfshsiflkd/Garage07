@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useLang } from "@/app/context/LanguageContext";
 
 export default function PhonesModal({
   open,
@@ -13,6 +14,20 @@ export default function PhonesModal({
   onClose: () => void;
   onCall: (p: string) => void;
 }) {
+  const { lang } = useLang();
+
+  // 🗣️ Орчуулга
+  const t = {
+    mn: {
+      title: "Дугаар сонгох",
+      close: "Хаах",
+    },
+    en: {
+      title: "Choose a number",
+      close: "Close",
+    },
+  }[lang];
+
   return (
     <AnimatePresence>
       {open && (
@@ -33,15 +48,18 @@ export default function PhonesModal({
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-[#a7ffea]">
-                Дугаар сонгох
+                {t.title}
               </h3>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-white p-1"
+                aria-label={t.close}
+                title={t.close}
               >
                 <X size={18} />
               </button>
             </div>
+
             <div className="space-y-2">
               {phones.map((p, i) => (
                 <button

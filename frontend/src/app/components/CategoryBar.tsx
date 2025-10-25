@@ -44,21 +44,37 @@ export default function CategoryBar({
     };
   }, []);
 
-  // Сонгосон чипийг төвд авчрах
+  // Center active chip WITHOUT moving page layout
   useEffect(() => {
     const container = scrollRef.current;
     const target = btnRefs.current[activeCategory];
     if (!container || !target) return;
-    // илүү найдвартай төвлөрүүлэлт
-    target.scrollIntoView({
-      inline: "center",
-      behavior: "smooth",
-      block: "nearest",
-    });
+
+    const desiredLeft =
+      target.offsetLeft - (container.clientWidth / 2 - target.clientWidth / 2);
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const nextLeft = Math.max(0, Math.min(desiredLeft, maxScroll));
+
+    container.scrollTo({ left: nextLeft, behavior: "smooth" });
   }, [activeCategory]);
 
   const scrollBy = (offset: number) => {
-    scrollRef.current?.scrollBy({ left: offset, behavior: "smooth" });
+    const el = scrollRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const nextLeft = Math.max(0, Math.min(el.scrollLeft + offset, maxScroll));
+    el.scrollTo({ left: nextLeft, behavior: "smooth" });
+  };
+
+  // Translate vertical wheel to horizontal inside the bar only
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    // If shift is pressed, browsers already do horizontal; let it be.
+    if (!e.shiftKey && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    }
   };
 
   // Keyboard support
@@ -71,11 +87,9 @@ export default function CategoryBar({
       const prev = ids[Math.max(idx - 1, 0)];
       if (prev) setActiveCategory(prev);
     } else if (e.key === "Home") {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      ids[0] && setActiveCategory(ids[0]);
+      if (ids[0]) setActiveCategory(ids[0]);
     } else if (e.key === "End") {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      ids[ids.length - 1] && setActiveCategory(ids[ids.length - 1]);
+      if (ids[ids.length - 1]) setActiveCategory(ids[ids.length - 1]);
     }
   };
 
@@ -83,12 +97,19 @@ export default function CategoryBar({
     <div className="relative w-full mb-4 flex-shrink-0" onKeyDown={onKeyDown}>
       <div
         ref={scrollRef}
-        className="group overflow-x-auto scrollbar-hide flex gap-3 px-10 scroll-smooth select-none snap-x snap-mandatory"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        onWheel={handleWheel}
+        className="group overflow-x-auto overflow-y-hidden scrollbar-hide flex gap-3 px-10 scroll-smooth select-none"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          touchAction: "pan-x",
+          overscrollBehaviorX: "contain",
+          overscrollBehaviorY: "none",
+        }}
         role="tablist"
         aria-label="Цэсний ангиллууд"
       >
-        {/* ⬅️ Spacer: эхэнд сумнаас зөрүүлж хоосон зай */}
+        {/* left spacer to avoid arrow covering first chip */}
         <div className="shrink-0 w-10" />
 
         <LayoutGroup id="categories">
@@ -108,15 +129,17 @@ export default function CategoryBar({
                 aria-selected={active}
                 aria-controls={`panel-${cat.category}`}
                 className={[
-                  "relative whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold",
+                  "relative px-4 py-2 rounded-full border text-sm font-semibold",
                   "transition-all focus:outline-none focus:ring-2 focus:ring-[#a7ffea]/60",
-                  "snap-start",
+                  "whitespace-nowrap max-w-[60vw] sm:max-w-none", // clamp long labels on mobile
                   active
                     ? "bg-[#a7ffea] text-black border-[#a7ffea] shadow-[0_6px_24px_rgba(167,255,234,0.25)]"
                     : "bg-transparent text-[#a7ffea]/85 border-[#a7ffea]/35 hover:border-[#a7ffea]/60",
                 ].join(" ")}
               >
-                <span className="relative z-10">{cat.category}</span>
+                <span className="relative z-10 inline-block truncate align-middle">
+                  {cat.category}
+                </span>
 
                 {active && (
                   <>
@@ -146,11 +169,11 @@ export default function CategoryBar({
           })}
         </LayoutGroup>
 
-        {/* ➡️ Spacer: төгсгөлд сумнаас зөрүүлж хоосон зай */}
+        {/* right spacer to avoid arrow covering last chip */}
         <div className="shrink-0 w-10" />
       </div>
 
-      {/* Arrows — жаахан дотогш */}
+      {/* arrows */}
       <button
         onClick={() => scrollBy(-160)}
         disabled={!canScrollLeft}
@@ -164,7 +187,6 @@ export default function CategoryBar({
       >
         <ChevronLeft size={18} />
       </button>
-
       <button
         onClick={() => scrollBy(160)}
         disabled={!canScrollRight}
@@ -179,41 +201,9 @@ export default function CategoryBar({
         <ChevronRight size={18} />
       </button>
 
-      {/* Fade edges — spacer-тэй тааруулж өргөнийг 10 болголоо */}
+      {/* fade edges */}
       <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-[#0b0b0d] to-transparent" />
       <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-[#0b0b0d] to-transparent" />
-
-      {/* Arrows */}
-      <button
-        onClick={() => scrollBy(-160)}
-        disabled={!canScrollLeft}
-        className={[
-          "absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full z-10 backdrop-blur-sm transition",
-          canScrollLeft
-            ? "bg-black/40 hover:bg-black/70 text-white"
-            : "bg-black/20 text-white/40 cursor-default",
-        ].join(" ")}
-        aria-label="Зүүн тийш гүйлгэх"
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <button
-        onClick={() => scrollBy(160)}
-        disabled={!canScrollRight}
-        className={[
-          "absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full z-10 backdrop-blur-sm transition",
-          canScrollRight
-            ? "bg-black/40 hover:bg-black/70 text-white"
-            : "bg-black/20 text-white/40 cursor-default",
-        ].join(" ")}
-        aria-label="Баруун тийш гүйлгэх"
-      >
-        <ChevronRight size={18} />
-      </button>
-
-      {/* Fade edges */}
-      <div className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-[#0b0b0d] to-transparent" />
-      <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-[#0b0b0d] to-transparent" />
 
       <style jsx>{`
         div::-webkit-scrollbar {

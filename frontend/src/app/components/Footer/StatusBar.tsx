@@ -1,5 +1,6 @@
 "use client";
 import { Clock } from "lucide-react";
+import { useLang } from "@/app/context/LanguageContext";
 
 export default function StatusBar({
   isOpen,
@@ -10,7 +11,15 @@ export default function StatusBar({
   open: string;
   close: string;
 }) {
-  const statusText = isOpen ? "Нээлттэй" : "Хаалттай";
+  const { lang } = useLang();
+  const statusText =
+    lang === "mn"
+      ? isOpen
+        ? "Нээлттэй"
+        : "Хаалттай"
+      : isOpen
+      ? "Open"
+      : "Closed";
   const statusColor = isOpen ? "bg-emerald-400" : "bg-red-400";
 
   return (
@@ -23,9 +32,15 @@ export default function StatusBar({
       </div>
       <div className="flex items-center gap-2 text-xs text-gray-300">
         <Clock size={14} className="text-[#a7ffea]" />
-        <span>
-          Ажиллах цаг: <strong>{open}</strong> — <strong>{close}</strong>
-        </span>
+        {lang === "mn" ? (
+          <span>
+            Ажиллах цаг: <strong>{open}</strong> — <strong>{close}</strong>
+          </span>
+        ) : (
+          <span>
+            Hours: <strong>{open}</strong> — <strong>{close}</strong>
+          </span>
+        )}
       </div>
     </div>
   );
