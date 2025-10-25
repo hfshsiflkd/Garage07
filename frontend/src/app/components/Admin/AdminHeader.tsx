@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, LogOut, MoreVertical, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ExchangeRateControl from "../Admin/ExchangeRateControl";
 
 export default function AdminHeader() {
   const [open, setOpen] = useState(false);
@@ -31,6 +32,7 @@ export default function AdminHeader() {
 
         {/* баруун — desktop товчлуурууд */}
         <div className="hidden sm:flex items-center gap-2">
+          <ExchangeRateControl />
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}

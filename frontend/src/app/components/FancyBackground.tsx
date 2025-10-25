@@ -127,10 +127,10 @@ export default function FancyBackground({
         </>
       )}
 
-      {/* Grain overlay (optional: /public/hool/noise.png) */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.06] mix-blend-overlay bg-[url('/hool/noise.png')]" />
+      
+      <div className="absolute inset-0 pointer-events-none opacity-[0.06] mix-blend-overlay " />
 
-      {/* Vignette */}
+     
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_60%,rgba(0,0,0,0.4)_100%)]" />
 
       <style jsx global>{`
