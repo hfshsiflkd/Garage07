@@ -14,7 +14,13 @@ dotenv.config();
 const app: Application = express();
 
 // 🧩 Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://qrmenumobile.vercel.app"], // зөвшөөрөх origin-ууд
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // cookie-уудыг зөвшөөрөх эсэх
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
