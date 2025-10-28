@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-// 24 тэмдэгттэй hex ObjectId шалгагч
 const objectId = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId");
 
-// "₮10,000" зэрэг текстийг тоо болгон хөрвүүлэх
 const moneyToNumber = z.preprocess((v) => {
   if (typeof v === "number") return v;
   if (typeof v === "string") {
@@ -13,17 +11,16 @@ const moneyToNumber = z.preprocess((v) => {
   return v;
 }, z.number().nonnegative({ message: "price must be a non-negative number" }));
 
-/** ------------------------
- *  Category: CREATE
- *  ------------------------ */
 export const createCategorySchema = z.object({
   body: z.object({
     category: z.string().min(1, "category is required").trim(),
+    // сонголтоор урьдчилж default болгох боломж олгов
+    isDefault: z.boolean().optional(),
     items: z
       .array(
         z.object({
           name: z.string().min(1).trim(),
-          price: moneyToNumber, // seed хийх үед шаардлагатай
+          price: moneyToNumber,
           desc: z.string().optional().default(""),
           img: z.string().url().optional(),
           available: z.boolean().optional(),
@@ -33,24 +30,18 @@ export const createCategorySchema = z.object({
   }),
 });
 
-/** ------------------------
- *  Item: ADD (price REQUIRED)
- *  ------------------------ */
 export const addItemSchema = z.object({
   params: z.object({
     category: z.string().min(1).trim(),
   }),
   body: z.object({
     name: z.string().min(1).trim(),
-    price: moneyToNumber, // ⬅️ ЗААВАЛ
+    price: moneyToNumber,
     desc: z.string().optional().default(""),
     img: z.string().url().optional(),
   }),
 });
 
-/** ------------------------
- *  Common: params with itemId
- *  ------------------------ */
 export const itemIdParamSchema = z.object({
   params: z.object({
     category: z.string().min(1).trim(),
@@ -58,10 +49,6 @@ export const itemIdParamSchema = z.object({
   }),
 });
 
-/** ------------------------
- *  Item: UPDATE (partial)
- *  removeImage дэмжинэ
- *  ------------------------ */
 export const updateItemSchema = z.object({
   params: z.object({
     category: z.string().min(1).trim(),
@@ -69,17 +56,14 @@ export const updateItemSchema = z.object({
   }),
   body: z.object({
     name: z.string().min(1).trim().optional(),
-    price: moneyToNumber.optional(), // ⬅️ partial update тул optional
+    price: moneyToNumber.optional(),
     desc: z.string().optional(),
-    img: z.string().url().optional(), // шинэ зураг URL
+    img: z.string().url().optional(),
     available: z.boolean().optional(),
-    removeImage: z.boolean().optional(), // ⬅️ зураг устгах урсгал
+    removeImage: z.boolean().optional(),
   }),
 });
 
-/** ------------------------
- *  Category: RENAME
- *  ------------------------ */
 export const renameCategoryParamsSchema = z.object({
   params: z.object({
     category: z.string().min(1).trim(),
@@ -91,3 +75,22 @@ export const renameCategoryBodySchema = z.object({
     newCategory: z.string().min(1, "newCategory is required").trim(),
   }),
 });
+
+// NEW: reorder
+export const reorderSchema = z.object({
+  body: z.object({
+    ids: z.array(objectId).min(1),
+  }),
+});
+
+// NEW: default toggle
+export const defaultToggleSchema = z.object({
+  params: z.object({ id: objectId }),
+  body: z.object({ isDefault: z.boolean() }),
+});
+export const setPositionSchema = z.object({
+  params: z.object({ id: objectId }), // :id бол ObjectId
+  body: z.object({ position: z.number().int().nonnegative() }), // 0..N
+});
+
+

@@ -17,7 +17,7 @@ const app: Application = express();
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://qrmenumobile.vercel.app"], // зөвшөөрөх origin-ууд
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true, // cookie-уудыг зөвшөөрөх эсэх
   })
 );

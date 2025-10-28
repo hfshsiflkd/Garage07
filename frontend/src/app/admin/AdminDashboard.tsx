@@ -21,8 +21,8 @@ export default function AdminDashboard() {
 
   const fetchMenu = async () => {
     try {
-      const res = await axios.get<MenuCategory[]>(`${API}/api/menu`);
-      setMenu(res.data);
+     const res = await axios.get<{ list: MenuCategory[] }>(`${API}/api/menu`);
+     setMenu(res.data.list ?? []);
     } catch (err) {
       console.error("❌ Fetch menu error:", err);
     } finally {
@@ -87,7 +87,11 @@ export default function AdminDashboard() {
           >
             <CategoryForm onSuccess={fetchMenu} />
             <ItemForm menu={menu} onSuccess={fetchMenu} />
-            <MenuList menu={menu} onDeleteSuccess={fetchMenu} />
+            <MenuList
+              menu={menu}
+              onDeleteSuccess={fetchMenu}
+              onReorderSuccess={fetchMenu}
+            />
           </main>
 
           {/* 🟦 Feedback — desktop баруун sticky; mobile дээр tab='feedback' үед */}

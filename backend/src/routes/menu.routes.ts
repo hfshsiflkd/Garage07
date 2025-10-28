@@ -8,7 +8,11 @@ import {
   itemIdParamSchema,
   renameCategoryParamsSchema,
   renameCategoryBodySchema,
-} from "../validators/ menu.validators";
+  // 🆕 байрлал солихын валидаци
+  setPositionSchema,
+  // 🆕 default toggle-ийн валидаци
+  defaultToggleSchema,
+} from "../validators/ menu.validators"; // ⬅️ ЗАЙГ АРИЛГАСАН
 
 import {
   getAll,
@@ -20,48 +24,52 @@ import {
   deleteItemById,
   deleteCategory,
   renameCategory,
-  
 } from "../controllers/menu/ index";
+
+// 🆕 шинэ контроллерууд
+import setPosition from "../controllers/menu/setPosition";
+import setDefaultCategory from "../controllers/menu/setDefaultCategory";
 
 const router = Router();
 
-// Бүх category + items
+// Бүх category + items (sorted)
 router.get("/", asyncHandler(getAll));
 
 // Category үүсгэх
 router.post("/", validate(createCategorySchema), asyncHandler(createCategory));
 
-// Item нэмэх (ID автоматаар үүснэ)
+// Item нэмэх
 router.post("/:category/items", validate(addItemSchema), asyncHandler(addItem));
 
-// Item авах (ID-гаар)
+// Item авах
 router.get(
   "/:category/items/:itemId",
   validate(itemIdParamSchema),
   asyncHandler(getItemById)
 );
 
-// Item шинэчлэх (ID-гаар)
+// Item шинэчлэх
 router.put(
   "/:category/items/:itemId",
   validate(updateItemSchema),
   asyncHandler(updateItemById)
 );
 
-// Item availability toggle (ID-гаар)
+// Item availability toggle
 router.put(
   "/:category/items/:itemId/availability",
   validate(itemIdParamSchema),
   asyncHandler(toggleAvailabilityById)
 );
 
-// Item устгах (ID-гаар)
+// Item устгах
 router.delete(
   "/:category/items/:itemId",
   validate(itemIdParamSchema),
   asyncHandler(deleteItemById)
 );
 
+// Category rename
 router.put(
   "/:category",
   validate(renameCategoryParamsSchema),
@@ -71,5 +79,19 @@ router.put(
 
 // Category устгах
 router.delete("/:category", asyncHandler(deleteCategory));
+
+// 🆕 Категорийн байрлал солих (энгийн логик: $inc диапазон)
+router.patch(
+  "/:id/position",
+  validate(setPositionSchema),
+  asyncHandler(setPosition)
+);
+
+// 🆕 Нэгийг default болгох/болих (partial unique индекстэй таарна)
+router.patch(
+  "/:id/default",
+  validate(defaultToggleSchema),
+  asyncHandler(setDefaultCategory)
+);
 
 export default router;

@@ -5,7 +5,7 @@ import axios from "axios";
 import { API } from "@/app/config";
 import { MenuCategory, MenuItem } from "@/app/components/types";
 import CategorySection from "./CategorySection";
-import EditItemModal, { SavePayload } from "./EditItemModal"; // ⬅️ төрлийг импортоллоо
+import EditItemModal, { SavePayload } from "./EditItemModal"; 
 
 /** ₮ формат */
 const tug = (v: number | string) =>
@@ -14,9 +14,14 @@ const tug = (v: number | string) =>
 type Props = {
   menu: MenuCategory[];
   onDeleteSuccess: () => void;
+  onReorderSuccess?: () => void;
 };
 
-export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
+export default function AdminMenuList({
+  menu,
+  onDeleteSuccess,
+  onReorderSuccess = () => {},
+}: Props) {
   const [updating, setUpdating] = useState(false);
 
   const [editingItem, setEditingItem] = useState<{
@@ -150,6 +155,7 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
     <section className="relative">
       {menu.map((cat) => {
         const opened = !!openCats[cat.category];
+
         return (
           <CategorySection
             key={cat.category}
@@ -163,6 +169,7 @@ export default function AdminMenuList({ menu, onDeleteSuccess }: Props) {
             onDeleteCategory={handleDeleteCategory}
             formatPrice={tug}
             updating={updating}
+            onReorderSuccess={onReorderSuccess}
           />
         );
       })}

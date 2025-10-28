@@ -14,17 +14,27 @@ import AnimatedBackground from "./components/AnimatedBackground";
 
 export default function Garage07QRMenu() {
   const [menu, setMenu] = useState<MenuCategory[]>([]);
-  const [activeCategory, setActiveCategory] = useState("Salad");
+  const [activeCategory, setActiveCategory] = useState("");
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const res = await axios.get<MenuCategory[]>(`${API}/api/menu`);
-        setMenu(res.data);
+        const res = await axios.get<{ list: MenuCategory[] }>(
+          `${API}/api/menu`
+        );
+        const list = res.data.list || [];
+
+        // ⚙️ Default-ийг (isDefault=true) эсвэл хамгийн эхнийхийг идэвхжүүлэх
+        const firstActive =
+          list.find((c) => c.isDefault) || (list.length > 0 ? list[0] : null);
+
+        setMenu(list);
+        if (firstActive) setActiveCategory(firstActive.category);
       } catch (err) {
         console.error("Menu fetch error:", err);
+        setMenu([]);
       } finally {
         setLoading(false);
       }

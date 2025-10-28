@@ -11,6 +11,9 @@ export type MenuItem = {
 };
 
 export type MenuCategory = {
+  isDefault: boolean;
+  position: number;
+  _id: string;
   category: string;
   items: MenuItem[];
 };
